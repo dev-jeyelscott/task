@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Tasks\UpdateTaskRequest;
-use Carbon\Carbon;
-use App\Models\Task;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Response;
-use App\Http\Resources\Tasks\TaskResource;
 use App\Http\Requests\Tasks\StoreTaskRequest;
-use Illuminate\Support\Facades\Session;
+use App\Http\Requests\Tasks\UpdateTaskRequest;
+use App\Http\Resources\Tasks\TaskResource;
+use App\Models\Task;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Response;
+use Inertia\Inertia;
 
 class TaskController extends Controller
 {
     public function index()
     {
         return Inertia::render('tasks/index', [
-            'taskItems' => Inertia::scroll(fn() => Task::latest()->paginate(10)->toResourceCollection(TaskResource::class)),
+            'taskItems' => Inertia::scroll(fn () => Task::latest()->paginate(10)->toResourceCollection(TaskResource::class)),
         ]);
     }
 
@@ -50,7 +49,7 @@ class TaskController extends Controller
                 'description' => $task->description,
                 'priority' => $task->priority,
                 'severity' => $task->severity,
-                'due_at' => $task->due_at ? Carbon::parse($task->due_at)->format('Y-m-d') : null
+                'due_at' => $task->due_at ? Carbon::parse($task->due_at)->format('Y-m-d') : null,
             ],
         ]);
     }

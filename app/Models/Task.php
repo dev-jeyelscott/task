@@ -18,11 +18,11 @@ class Task extends Model
         'completed_at',
         'priority',
         'severity',
-        'due_at'
+        'due_at',
     ];
 
     protected $casts = [
         'completed_at' => 'datetime',
-        'due_at' => 'datetime'
+        'due_at' => 'datetime',
     ];
 }

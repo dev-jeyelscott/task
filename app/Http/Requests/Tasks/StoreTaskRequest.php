@@ -4,8 +4,8 @@ namespace App\Http\Requests\Tasks;
 
 use App\Enums\Priority;
 use App\Enums\Severity;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTaskRequest extends FormRequest
 {

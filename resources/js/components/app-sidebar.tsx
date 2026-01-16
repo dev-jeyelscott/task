@@ -29,7 +29,7 @@ const mainNavItems: NavItem[] = [
         title: 'Tasks',
         href: tasks.index().url,
         icon: List,
-    }
+    },
 ];
 
 const footerNavItems: NavItem[] = [
