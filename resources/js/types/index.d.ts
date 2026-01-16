@@ -27,6 +27,12 @@ export interface SharedData {
     auth: Auth;
     sidebarOpen: boolean;
     [key: string]: unknown;
+    flash: {
+        toast?: {
+            message: string;
+            type?: 'success' | 'error' | 'info';
+        };
+    };
 }
 
 export interface User {

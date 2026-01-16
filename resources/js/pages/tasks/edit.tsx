@@ -1,0 +1,196 @@
+import { Transition } from "@headlessui/react";
+import { Form, Head, Link } from "@inertiajs/react";
+import { useRef } from "react";
+
+import TaskController from "@/actions/App/Http/Controllers/TaskController";
+import InputError from "@/components/input-error";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent,CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import AppLayout from "@/layouts/app-layout";
+import tasks from "@/routes/tasks";
+import { BreadcrumbItem } from "@/types";
+
+interface Task {
+    id: number;
+    title: string;
+    description: string;
+    priority: string;
+    severity: string;
+    is_completed: boolean;
+    completed_at: string|null;
+    due_at: string|null;
+    created_at: string;
+    updated_at: string;
+}
+
+
+export default function TaskEdit({
+    task
+}: {
+    task: Task
+})
+{
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Tasks',
+            href: tasks.index().url,
+        },
+        {
+            title: 'Edit Task',
+            href: tasks.edit(task.id).url,
+        },
+    ]
+
+    const taskTitle = useRef<HTMLInputElement>(null);
+    const taskDescription = useRef<HTMLInputElement>(null);
+    const taskPriority = useRef<HTMLSelectElement>(null);
+    const taskSeverity = useRef<HTMLSelectElement>(null);
+    const taskDueDate = useRef<HTMLInputElement>(null);
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Edit Task" />
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <div className="p-4 relative flex justify-center min-h-100vh flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
+                    <div className="w-full">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Edit Task</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    {...TaskController.update.form(task)}
+                                    options={{
+                                        preserveScroll: true,
+                                    }}
+                                    className="space-y-6"
+                                    onError={(errors) => {
+                                        if(errors.title) {
+                                            taskTitle.current?.focus();
+                                        }
+                                        if(errors.description) {
+                                            taskDescription.current?.focus();
+                                        }
+                                        if(errors.priority) {
+                                            taskPriority.current?.focus();
+                                        }
+                                        if(errors.severity) {
+                                            taskSeverity.current?.focus();
+                                        }
+                                        if(errors.due_at) {
+                                            taskDueDate.current?.focus();
+                                        }
+                                    }}
+                                >
+                                    {({ errors , processing }) => (
+                                        <>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="title">
+                                                    Title <span className="text-red-600">*</span>
+                                                </Label>
+                                                <Input
+                                                    id="title"
+                                                    name="title"
+                                                    ref={taskTitle}
+                                                    className="mt-1 block w-full"
+                                                    required
+                                                    autoFocus
+                                                    placeholder="Title"
+                                                    defaultValue={task.title}
+                                                />
+                                                <InputError message={errors.title} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="description">
+                                                    Description
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    id="description"
+                                                    ref={taskDescription}
+                                                    name="description"
+                                                    className="mt-1 block w-full"
+                                                    placeholder="Description"
+                                                    defaultValue={task.description}
+                                                />
+                                                <InputError message={errors.description} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <Label>
+                                                    Priority
+                                                </Label>
+                                                <Select name="priority" defaultValue={task.priority}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select priority" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectLabel>Priority</SelectLabel>
+                                                            <SelectItem value="low">Low</SelectItem>
+                                                            <SelectItem value="medium">Medium</SelectItem>
+                                                            <SelectItem value="high">High</SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                                <InputError message={errors.priority} />
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                <Label>
+                                                    Severity
+                                                </Label>
+                                                <Select name="severity" defaultValue={task.severity}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select severity" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectLabel>Severity</SelectLabel>
+                                                            <SelectItem value="low">Low</SelectItem>
+                                                            <SelectItem value="medium">Medium</SelectItem>
+                                                            <SelectItem value="high">High</SelectItem>
+                                                            <SelectItem value="critical">Critical</SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                                <InputError message={errors.severity} />
+                                            </div>
+
+                                            <div>
+                                                <Label htmlFor="due_at">Due Date</Label>
+                                                <Input
+                                                    id="due_at"
+                                                    name="due_at"
+                                                    type="date"
+                                                    ref={taskDueDate}
+                                                    className="mt-1 block w-full"
+                                                    defaultValue={task.due_at ?? ''}
+                                                />
+                                                <InputError message={errors.due_at} />
+                                            </div>
+
+                                            <div className="flex items-center justify-between gap-4">
+                                                <div className="flex items-center gap-4">
+                                                    <Button type="submit" disabled={processing}>
+                                                        {processing ? 'Updating...' : 'Update'}
+                                                    </Button>
+                                                </div>
+
+                                                <Link href={tasks.index().url} className="text-sm font-medium hover:underline">Cancel</Link>
+                                            </div>
+                                        </>
+                                    )}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        </AppLayout>
+    )
+}
