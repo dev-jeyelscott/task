@@ -15,7 +15,7 @@ class TaskController extends Controller
     public function index()
     {
         return Inertia::render('tasks/index', [
-            'taskItems' => Inertia::scroll(fn () => Task::latest()->paginate(10)->toResourceCollection(TaskResource::class)),
+            'taskItems' => Inertia::scroll(fn () => Task::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
         ]);
     }
 
@@ -37,7 +37,16 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
-        //
+        return Inertia::render('tasks/show', [
+            'task' => [
+                'id' => $task->id,
+                'title' => $task->title,
+                'description' => $task->description,
+                'priority' => $task->priority,
+                'severity' => $task->severity,
+                'due_at' => $task->due_at ? Carbon::parse($task->due_at)->format('Y-m-d') : null,
+            ],
+        ]);
     }
 
     public function edit(Task $task)

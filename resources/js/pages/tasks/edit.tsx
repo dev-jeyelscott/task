@@ -187,7 +187,7 @@ export default function TaskEdit({ task }: { task: Task }) {
                                                 />
                                             </div>
 
-                                            <div>
+                                            <div className="grid gap-2">
                                                 <Label htmlFor="due_at">
                                                     Due Date
                                                 </Label>
@@ -219,7 +219,9 @@ export default function TaskEdit({ task }: { task: Task }) {
                                                 </div>
 
                                                 <Link
-                                                    href={tasks.index().url}
+                                                    href={
+                                                        tasks.show(task.id).url
+                                                    }
                                                     className="text-sm font-medium hover:underline"
                                                 >
                                                     Cancel
