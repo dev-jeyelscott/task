@@ -26,12 +26,10 @@ export default function AppSidebarLayout({
 
     const [visible, setVisible] = useState(false);
 
-    if (flash.toast) {
-        setVisible(true);
-    }
-
     useEffect(() => {
         if (flash.toast) {
+            setVisible(true);
+
             const timer = setTimeout(() => {
                 setVisible(false);
             }, 3000);

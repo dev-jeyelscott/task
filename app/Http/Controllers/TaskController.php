@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Task\Actions\StoreTask;
+use App\Domain\Task\DTOs\CreateTaskData;
+use App\Domain\Task\Entities\TaskPriority;
+use App\Domain\Task\Entities\TaskSeverity;
+use App\Domain\Task\Models\Task as TaskDomain;
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
 use App\Http\Resources\Tasks\TaskResource;
-use App\Models\Task;
+use App\Models\Task as TaskModel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
 use Inertia\Inertia;
@@ -15,7 +20,7 @@ class TaskController extends Controller
     public function index()
     {
         return Inertia::render('tasks/index', [
-            'taskItems' => Inertia::scroll(fn () => Task::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
+            'taskItems' => Inertia::scroll(fn() => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
         ]);
     }
 
@@ -24,18 +29,26 @@ class TaskController extends Controller
         return Inertia::render('tasks/create');
     }
 
-    public function store(StoreTaskRequest $request)
+    public function store(StoreTaskRequest $request, StoreTask $action)
     {
-        Task::create($request->all());
+        $data = new CreateTaskData(
+            $request->title,
+            $request->description,
+            new TaskPriority($request->priority),
+            new TaskSeverity($request->severity),
+            $request->due_at,
+        );
 
-        return Response::redirectTo(route('tasks.index'))
+        $action->execute($data);
+
+        return Response::redirectToRoute('tasks.index')
             ->with('toast', [
                 'type' => 'success',
                 'message' => 'Task created successfully.',
             ]);
     }
 
-    public function show(Task $task)
+    public function show(TaskModel $task)
     {
         return Inertia::render('tasks/show', [
             'task' => [
@@ -49,7 +62,7 @@ class TaskController extends Controller
         ]);
     }
 
-    public function edit(Task $task)
+    public function edit(TaskModel $task)
     {
         return Inertia::render('tasks/edit', [
             'task' => [
@@ -63,7 +76,7 @@ class TaskController extends Controller
         ]);
     }
 
-    public function update(Task $task, UpdateTaskRequest $request)
+    public function update(TaskModel $task, UpdateTaskRequest $request)
     {
         $task->update($request->all());
 
@@ -74,7 +87,7 @@ class TaskController extends Controller
             ]);
     }
 
-    public function destroy(Task $task)
+    public function destroy(TaskModel $task)
     {
         $task->delete();
 

@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Persistence\Eloquent;
+
+use App\Domain\Task\Entities\TaskPriority;
+use App\Domain\Task\Entities\TaskSeverity;
+use App\Models\Task as EloquentTask;
+use App\Domain\Task\Models\Task;
+use App\Domain\Task\Repositories\TaskRepository;
+
+final class EloquestTaskRepository implements TaskRepository
+{
+    public function find(int $id): ?Task
+    {
+        $task = EloquentTask::findOrFail($id);
+
+        return new Task(
+            $task->id,
+            $task->title,
+            $task->description,
+            $task->is_completed,
+            $task->completed_at,
+            new TaskPriority($task->priority),
+            new TaskSeverity($task->severity),
+            $task->due_at,
+        );
+    }
+
+    public function store(Task $task): void
+    {
+        EloquentTask::create([
+            'title' => $task->title,
+            'description' => $task->description,
+            'is_completed' => $task->is_completed,
+            'completed_at' => $task->completed_at,
+            'due_at' => $task->due_at,
+            'priority' => $task->priority->value(),
+            'severity' => $task->severity->value(),
+        ]);
+    }
+}
