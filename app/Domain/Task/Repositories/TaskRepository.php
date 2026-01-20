@@ -11,4 +11,6 @@ interface TaskRepository
     public function store(Task $task): void;
 
     public function update(Task $task): void;
+
+    public function delete(Task $task): void;
 }

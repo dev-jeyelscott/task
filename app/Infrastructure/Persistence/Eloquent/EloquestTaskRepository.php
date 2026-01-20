@@ -53,4 +53,11 @@ final class EloquestTaskRepository implements TaskRepository
 
         $eloquentTask->update();
     }
+
+    public function delete(Task $task): void
+    {
+        $eloquentTask = EloquentTask::findOrFail($task->id());
+
+        $eloquentTask->delete();
+    }
 }

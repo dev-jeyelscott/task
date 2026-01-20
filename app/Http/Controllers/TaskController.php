@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Task\Actions\DeleteTask;
 use App\Domain\Task\Actions\StoreTask;
 use App\Domain\Task\Actions\UpdateTask;
 use App\Domain\Task\DTOs\CreateTaskData;
@@ -21,7 +22,7 @@ class TaskController extends Controller
     public function index()
     {
         return Inertia::render('tasks/index', [
-            'taskItems' => Inertia::scroll(fn () => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
+            'taskItems' => Inertia::scroll(fn() => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
         ]);
     }
 
@@ -95,9 +96,9 @@ class TaskController extends Controller
             ]);
     }
 
-    public function destroy(TaskModel $task)
+    public function destroy(TaskModel $task, DeleteTask $action)
     {
-        $task->delete();
+        $action->execute($task->id);
 
         return Response::redirectToRoute('tasks.index')
             ->with('toast', [
