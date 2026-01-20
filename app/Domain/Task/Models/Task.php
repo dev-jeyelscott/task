@@ -94,15 +94,11 @@ class Task
         $this->due_at = $due_at;
     }
 
-    public function toggleCompleted(bool $is_completed): void
+    public function toggleCompletion(): void
     {
-        $this->is_completed = ! $this->is_completed;
+        $this->is_completed = !$this->is_completed;
 
-        if ($this->is_completed) {
-            $this->completed_at = new CarbonImmutable(now());
-        } else {
-            $this->completed_at = null;
-        }
+        $this->completed_at = $this->is_completed ? CarbonImmutable::now() : null;
     }
 
     public function id(): int

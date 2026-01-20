@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\Task\Actions\DeleteTask;
 use App\Domain\Task\Actions\StoreTask;
+use App\Domain\Task\Actions\ToggleCompletion;
 use App\Domain\Task\Actions\UpdateTask;
 use App\Domain\Task\DTOs\CreateTaskData;
 use App\Domain\Task\Entities\TaskPriority;
@@ -22,7 +23,7 @@ class TaskController extends Controller
     public function index()
     {
         return Inertia::render('tasks/index', [
-            'taskItems' => Inertia::scroll(fn () => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
+            'taskItems' => Inertia::scroll(fn() => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
         ]);
     }
 
@@ -53,28 +54,14 @@ class TaskController extends Controller
     public function show(TaskModel $task)
     {
         return Inertia::render('tasks/show', [
-            'task' => [
-                'id' => $task->id,
-                'title' => $task->title,
-                'description' => $task->description,
-                'priority' => $task->priority,
-                'severity' => $task->severity,
-                'due_at' => $task->due_at ? Carbon::parse($task->due_at)->format('Y-m-d') : null,
-            ],
+            'task' => (new TaskResource($task))->resolve(),
         ]);
     }
 
     public function edit(TaskModel $task)
     {
         return Inertia::render('tasks/edit', [
-            'task' => [
-                'id' => $task->id,
-                'title' => $task->title,
-                'description' => $task->description,
-                'priority' => $task->priority,
-                'severity' => $task->severity,
-                'due_at' => $task->due_at ? Carbon::parse($task->due_at)->format('Y-m-d') : null,
-            ],
+            'task' => new TaskResource($task)->resolve(),
         ]);
     }
 
@@ -104,6 +91,17 @@ class TaskController extends Controller
             ->with('toast', [
                 'type' => 'success',
                 'message' => 'Task deleted successfully.',
+            ]);
+    }
+
+    public function toggleCompletion(TaskModel $task, ToggleCompletion $action)
+    {
+        $action->execute($task->id);
+
+        return Response::redirectToRoute('tasks.show', $task->id)
+            ->with('toast', [
+                'type' => 'success',
+                'message' => 'Task toggled successfully.',
             ]);
     }
 }

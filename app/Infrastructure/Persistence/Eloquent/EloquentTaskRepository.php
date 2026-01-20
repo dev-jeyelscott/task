@@ -10,9 +10,9 @@ use App\Domain\Task\Models\Task;
 use App\Domain\Task\Repositories\TaskRepository;
 use App\Models\Task as EloquentTask;
 
-final class EloquestTaskRepository implements TaskRepository
+final class EloquentTaskRepository implements TaskRepository
 {
-    public function find(int $id)
+    public function find(int $id): Task
     {
         $task = EloquentTask::findOrFail($id);
 
@@ -31,11 +31,11 @@ final class EloquestTaskRepository implements TaskRepository
     public function store(Task $task): void
     {
         EloquentTask::create([
-            'title' => $task->title,
-            'description' => $task->description,
-            'is_completed' => $task->is_completed,
-            'completed_at' => $task->completed_at,
-            'due_at' => $task->due_at,
+            'title' => $task->title(),
+            'description' => $task->description(),
+            'is_completed' => $task->isCompleted(),
+            'completed_at' => $task->completedAt(),
+            'due_at' => $task->dueAt(),
             'priority' => $task->priority->value(),
             'severity' => $task->severity->value(),
         ]);
@@ -54,10 +54,20 @@ final class EloquestTaskRepository implements TaskRepository
         $eloquentTask->update();
     }
 
-    public function delete(Task $task): void
+    public function deleteById(int $id): void
+    {
+        $eloquentTask = EloquentTask::findOrFail($id);
+
+        $eloquentTask->delete();
+    }
+
+    public function toggleCompletion(Task $task): void
     {
         $eloquentTask = EloquentTask::findOrFail($task->id());
 
-        $eloquentTask->delete();
+        $eloquentTask->update([
+            'is_completed' => $task->isCompleted(),
+            'completed_at' => $task->completedAt(),
+        ]);
     }
 }

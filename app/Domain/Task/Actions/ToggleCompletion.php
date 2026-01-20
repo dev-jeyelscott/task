@@ -6,7 +6,7 @@ namespace App\Domain\Task\Actions;
 
 use App\Domain\Task\Repositories\TaskRepository;
 
-final class DeleteTask
+final class ToggleCompletion
 {
     public function __construct(
         private TaskRepository $task_repository
@@ -14,6 +14,10 @@ final class DeleteTask
 
     public function execute(int $id): void
     {
-        $this->task_repository->deleteById($id);
+        $task = $this->task_repository->find($id);
+
+        $task->toggleCompletion();
+
+        $this->task_repository->toggleCompletion($task);
     }
 }

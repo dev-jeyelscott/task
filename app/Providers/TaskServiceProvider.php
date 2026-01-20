@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Domain\Task\Repositories\TaskRepository;
-use App\Infrastructure\Persistence\Eloquent\EloquestTaskRepository;
+use App\Infrastructure\Persistence\Eloquent\EloquentTaskRepository;
 use Illuminate\Support\ServiceProvider;
 
 final class TaskServiceProvider extends ServiceProvider
@@ -15,7 +15,7 @@ final class TaskServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             TaskRepository::class,
-            EloquestTaskRepository::class
+            EloquentTaskRepository::class
         );
     }
 }
