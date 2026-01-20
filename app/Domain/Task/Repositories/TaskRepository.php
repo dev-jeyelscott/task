@@ -9,4 +9,6 @@ interface TaskRepository
     public function find(int $id);
 
     public function store(Task $task): void;
+
+    public function update(Task $task): void;
 }

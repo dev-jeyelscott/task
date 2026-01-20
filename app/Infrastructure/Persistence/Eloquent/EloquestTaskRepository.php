@@ -20,7 +20,7 @@ final class EloquestTaskRepository implements TaskRepository
             $task->id,
             $task->title,
             $task->description,
-            $task->is_completed,
+            (bool) $task->is_completed,
             $task->completed_at,
             new TaskPriority($task->priority),
             new TaskSeverity($task->severity),
@@ -39,5 +39,18 @@ final class EloquestTaskRepository implements TaskRepository
             'priority' => $task->priority->value(),
             'severity' => $task->severity->value(),
         ]);
+    }
+
+    public function update(Task $task): void
+    {
+        $eloquentTask = EloquentTask::findOrFail($task->id());
+
+        $eloquentTask->title = $task->title();
+        $eloquentTask->description = $task->description();
+        $eloquentTask->due_at = $task->dueAt();
+        $eloquentTask->priority = $task->priority()->value();
+        $eloquentTask->severity = $task->severity()->value();
+
+        $eloquentTask->update();
     }
 }

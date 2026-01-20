@@ -60,4 +60,88 @@ class Task
             $data->due_at
         );
     }
+
+    public function rename(string $title): void
+    {
+        if (trim($title) === '') {
+            throw new \InvalidArgumentException('Title cannot be empty');
+        }
+
+        $this->title = $title;
+    }
+
+    public function changeDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function changePriority(TaskPriority $priority): void
+    {
+        $this->priority = $priority;
+    }
+
+    public function changeSeverity(TaskSeverity $severity): void
+    {
+        $this->severity = $severity;
+    }
+
+    public function reschedule(CarbonImmutable $due_at): void
+    {
+        if ($due_at->isBefore(CarbonImmutable::today())) {
+            throw new \InvalidArgumentException('Due date cannot be in the past');
+        }
+
+        $this->due_at = $due_at;
+    }
+
+    public function toggleCompleted(bool $is_completed): void
+    {
+        $this->is_completed = ! $this->is_completed;
+
+        if ($this->is_completed) {
+            $this->completed_at = new CarbonImmutable(now());
+        } else {
+            $this->completed_at = null;
+        }
+    }
+
+    public function id(): int
+    {
+        return $this->id;
+    }
+
+    public function title(): string
+    {
+        return $this->title;
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->is_completed;
+    }
+
+    public function completedAt(): ?CarbonImmutable
+    {
+        return $this->completed_at;
+    }
+
+    public function priority(): TaskPriority
+    {
+        return $this->priority;
+    }
+
+    public function severity(): TaskSeverity
+    {
+        return $this->severity;
+    }
+
+    public function dueAt(): ?CarbonImmutable
+    {
+        return $this->due_at;
+    }
 }

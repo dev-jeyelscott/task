@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Task\Actions\StoreTask;
+use App\Domain\Task\Actions\UpdateTask;
 use App\Domain\Task\DTOs\CreateTaskData;
 use App\Domain\Task\Entities\TaskPriority;
 use App\Domain\Task\Entities\TaskSeverity;
@@ -20,7 +21,7 @@ class TaskController extends Controller
     public function index()
     {
         return Inertia::render('tasks/index', [
-            'taskItems' => Inertia::scroll(fn() => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
+            'taskItems' => Inertia::scroll(fn () => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
         ]);
     }
 
@@ -76,9 +77,16 @@ class TaskController extends Controller
         ]);
     }
 
-    public function update(TaskModel $task, UpdateTaskRequest $request)
+    public function update(TaskModel $task, UpdateTaskRequest $request, UpdateTask $action)
     {
-        $task->update($request->all());
+        $action->execute(
+            $task->id,
+            $request->title,
+            $request->description,
+            new TaskPriority($request->priority),
+            new TaskSeverity($request->severity),
+            new CarbonImmutable($request->due_at),
+        );
 
         return Response::redirectToRoute('tasks.edit', $task->id)
             ->with('toast', [
