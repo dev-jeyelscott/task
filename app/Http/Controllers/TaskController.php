@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Task\Actions\CompleteTask;
 use App\Domain\Task\Actions\DeleteTask;
+use App\Domain\Task\Actions\ReopenTask;
 use App\Domain\Task\Actions\StoreTask;
-use App\Domain\Task\Actions\ToggleCompletion;
 use App\Domain\Task\Actions\UpdateTask;
-use App\Domain\Task\DTOs\CreateTaskData;
-use App\Domain\Task\Entities\TaskPriority;
-use App\Domain\Task\Entities\TaskSeverity;
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
 use App\Http\Resources\Tasks\TaskResource;
 use App\Models\Task as TaskModel;
-use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Response;
 use Inertia\Inertia;
 
 class TaskController extends Controller
@@ -33,17 +29,15 @@ class TaskController extends Controller
 
     public function store(StoreTaskRequest $request, StoreTask $action)
     {
-        $data = new CreateTaskData(
+        $id = $action->execute(
             $request->title,
             $request->description,
-            new TaskPriority($request->priority),
-            new TaskSeverity($request->severity),
-            new CarbonImmutable($request->due_at),
+            $request->priority,
+            $request->severity,
+            $request->due_at,
         );
 
-        $action->execute($data);
-
-        return Response::redirectToRoute('tasks.index')
+        return redirect()->to(route('tasks.show', $id))
             ->with('toast', [
                 'type' => 'success',
                 'message' => 'Task created successfully.',
@@ -70,12 +64,12 @@ class TaskController extends Controller
             $task->id,
             $request->title,
             $request->description,
-            new TaskPriority($request->priority),
-            new TaskSeverity($request->severity),
-            new CarbonImmutable($request->due_at),
+            $request->priority,
+            $request->severity,
+            $request->due_at,
         );
 
-        return Response::redirectToRoute('tasks.edit', $task->id)
+        return redirect()->to(route('tasks.show', $task->id))
             ->with('toast', [
                 'type' => 'success',
                 'message' => 'Task updated successfully.',
@@ -86,21 +80,32 @@ class TaskController extends Controller
     {
         $action->execute($task->id);
 
-        return Response::redirectToRoute('tasks.index')
+        return redirect()->to(route('tasks.index'))
             ->with('toast', [
                 'type' => 'success',
                 'message' => 'Task deleted successfully.',
             ]);
     }
 
-    public function toggleCompletion(TaskModel $task, ToggleCompletion $action)
+    public function complete(TaskModel $task, CompleteTask $action)
     {
         $action->execute($task->id);
 
-        return Response::redirectToRoute('tasks.show', $task->id)
+        return redirect()->to(route('tasks.show', $task->id))
             ->with('toast', [
                 'type' => 'success',
-                'message' => 'Task toggled successfully.',
+                'message' => 'Task completed successfully.',
+            ]);
+    }
+
+    public function reopen(TaskModel $task, ReopenTask $action)
+    {
+        $action->execute($task->id);
+
+        return redirect()->to(route('tasks.show', $task->id))
+            ->with('toast', [
+                'type' => 'success',
+                'message' => 'Task reopened successfully.',
             ]);
     }
 }

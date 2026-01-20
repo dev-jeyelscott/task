@@ -17,7 +17,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::resource('tasks', TaskController::class);
-    Route::put('tasks/{task}/toggle-completion', [TaskController::class, 'toggleCompletion'])->name('tasks.toggleCompletion');
+    Route::put('tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
+    Route::put('tasks/{task}/reopen', [TaskController::class, 'reopen'])->name('tasks.reopen');
 });
 
 require __DIR__.'/settings.php';

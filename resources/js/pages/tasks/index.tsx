@@ -34,6 +34,11 @@ interface Props {
 }
 
 export default function TaskIndex({ taskItems }: Props) {
+    const sortedTasks = [...taskItems.data].sort((a, b) => {
+        if (a.is_completed === b.is_completed) return 0;
+        return a.is_completed ? 1 : -1;
+    });
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tasks" />
@@ -73,10 +78,13 @@ export default function TaskIndex({ taskItems }: Props) {
                                             <th className="px-4 py-3 text-center">
                                                 Severity
                                             </th>
-                                            <th className="px-4 py-3">
+                                            <th className="px-4 py-3 text-center">
                                                 Due Date
                                             </th>
-                                            <th className="px-4 py-3 text-right">
+                                            <th className="px-4 py-3 text-center">
+                                                Status
+                                            </th>
+                                            <th className="px-4 py-3 text-center">
                                                 Actions
                                             </th>
                                         </tr>
@@ -86,7 +94,7 @@ export default function TaskIndex({ taskItems }: Props) {
                                         id="tasks-table-body"
                                         className="divide-y divide-gray-100"
                                     >
-                                        {taskItems.data.map((task: Task) => (
+                                        {sortedTasks.map((task: Task) => (
                                             <TaskRow
                                                 key={task.id}
                                                 task={task}

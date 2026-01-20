@@ -6,13 +6,11 @@ use App\Domain\Task\Models\Task;
 
 interface TaskRepository
 {
-    public function find(int $id): Task;
+    public function find(int $id): ?Task;
 
-    public function store(Task $task): void;
+    public function store(Task $task): int;
 
-    public function update(Task $task): void;
+    public function save(Task $task): void;
 
     public function deleteById(int $id): void;
-
-    public function toggleCompletion(Task $task): void;
 }

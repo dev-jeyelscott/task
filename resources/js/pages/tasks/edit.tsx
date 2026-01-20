@@ -216,16 +216,25 @@ export default function TaskEdit({ task }: { task: Task }) {
                                                             ? 'Updating...'
                                                             : 'Update'}
                                                     </Button>
+                                                    <Link
+                                                        href={
+                                                            tasks.show(task.id)
+                                                                .url
+                                                        }
+                                                        className="text-sm text-muted-foreground hover:underline"
+                                                    >
+                                                        Cancel
+                                                    </Link>
                                                 </div>
 
-                                                <Link
-                                                    href={
-                                                        tasks.show(task.id).url
-                                                    }
-                                                    className="text-sm font-medium hover:underline"
-                                                >
-                                                    Cancel
-                                                </Link>
+                                                <div className="flex items-center gap-2">
+                                                    <Link
+                                                        href={tasks.index().url}
+                                                        className="text-sm text-muted-foreground hover:underline"
+                                                    >
+                                                        Back to Tasks
+                                                    </Link>
+                                                </div>
                                             </div>
                                         </>
                                     )}

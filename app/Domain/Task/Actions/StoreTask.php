@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Task\Actions;
 
-use App\Domain\Task\DTOs\CreateTaskData;
-use App\Domain\Task\Models\Task;
+use App\Domain\Task\Entities\TaskPriority;
+use App\Domain\Task\Entities\TaskSeverity;
+use App\Domain\Task\Models\Task as TaskModel;
 use App\Domain\Task\Repositories\TaskRepository;
+use Carbon\CarbonImmutable;
 
 final class StoreTask
 {
@@ -14,10 +16,23 @@ final class StoreTask
         private TaskRepository $task_repository
     ) {}
 
-    public function execute(CreateTaskData $data): void
-    {
-        $task = Task::create($data);
+    public function execute(
+        string $title,
+        ?string $description,
+        string $priority,
+        string $severity,
+        ?string $dueAt
+    ): int {
+        $task = TaskModel::create(
+            $title,
+            $description,
+            new TaskPriority($priority),
+            new TaskSeverity($severity),
+            $dueAt !== null ? new CarbonImmutable($dueAt) : null,
+        );
 
-        $this->task_repository->store($task);
+        $taskId = $this->task_repository->store($task);
+
+        return $taskId;
     }
 }

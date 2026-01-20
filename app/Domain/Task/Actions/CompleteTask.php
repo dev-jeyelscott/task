@@ -6,7 +6,7 @@ namespace App\Domain\Task\Actions;
 
 use App\Domain\Task\Repositories\TaskRepository;
 
-final class ToggleCompletion
+final class CompleteTask
 {
     public function __construct(
         private TaskRepository $task_repository
@@ -16,8 +16,8 @@ final class ToggleCompletion
     {
         $task = $this->task_repository->find($id);
 
-        $task->toggleCompletion();
+        $task->complete();
 
-        $this->task_repository->toggleCompletion($task);
+        $this->task_repository->save($task);
     }
 }

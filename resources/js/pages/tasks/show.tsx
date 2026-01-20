@@ -46,18 +46,55 @@ export default function TaskShow({ task }: { task: Task }) {
                                 {task.title}
                             </CardTitle>
 
-                            <Badge
-                                variant={
-                                    task.is_completed ? 'default' : 'outline'
-                                }
-                            >
-                                {task.is_completed ? 'Completed' : 'Pending'}
-                            </Badge>
+                            <div className="flex gap-2 text-right">
+                                <Badge
+                                    variant={
+                                        task.is_completed
+                                            ? 'default'
+                                            : 'outline'
+                                    }
+                                >
+                                    {task.is_completed
+                                        ? 'Completed'
+                                        : 'Pending'}
+                                </Badge>
+                                {task.is_completed && (
+                                    <p className="text-sm text-muted-foreground">
+                                        <span className="font-bold">
+                                            {task.completed_at
+                                                ? new Date(
+                                                      task.completed_at,
+                                                  ).toLocaleDateString(
+                                                      'en-US',
+                                                      {
+                                                          month: 'short',
+                                                          day: '2-digit',
+                                                          year: 'numeric',
+                                                          hour: '2-digit',
+                                                          minute: '2-digit',
+                                                          second: '2-digit',
+                                                      },
+                                                  )
+                                                : '—'}
+                                        </span>
+                                    </p>
+                                )}
+                            </div>
                         </div>
 
                         {task.due_at && (
                             <p className="text-sm text-muted-foreground">
-                                Due on {task.due_at}
+                                Due on{' '}
+                                <span className="font-bold">
+                                    {new Date(task.due_at).toLocaleDateString(
+                                        'en-US',
+                                        {
+                                            month: 'short',
+                                            day: '2-digit',
+                                            year: 'numeric',
+                                        },
+                                    )}
+                                </span>
                             </p>
                         )}
                     </CardHeader>
@@ -115,16 +152,36 @@ export default function TaskShow({ task }: { task: Task }) {
                                     Edit Task
                                 </Button>
                                 <Form
-                                    {...TaskController.toggleCompletion.form(
-                                        task.id,
-                                    )}
+                                    hidden={task.is_completed == true}
+                                    {...TaskController.complete.form(task.id)}
                                     className="inline-block"
                                     resetOnSuccess
                                 >
-                                    {({
-                                        processing,
-                                        // recentlySuccessful
-                                    }) => (
+                                    {({ processing }) => (
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                type="submit"
+                                                disabled={processing}
+                                                variant={
+                                                    task.is_completed
+                                                        ? 'outline'
+                                                        : 'secondary'
+                                                }
+                                            >
+                                                {task.is_completed
+                                                    ? 'Mark as Pending'
+                                                    : 'Mark as Completed'}
+                                            </Button>
+                                        </div>
+                                    )}
+                                </Form>
+                                <Form
+                                    hidden={!task.is_completed}
+                                    {...TaskController.reopen.form(task.id)}
+                                    className="inline-block"
+                                    resetOnSuccess
+                                >
+                                    {({ processing }) => (
                                         <div className="flex items-center gap-2">
                                             <Button
                                                 type="submit"

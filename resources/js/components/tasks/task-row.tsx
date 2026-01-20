@@ -20,14 +20,26 @@ interface Task {
     priority: string;
     severity: string;
     is_completed: boolean;
+    completed_at: string | null;
     due_at: string | null;
 }
 
-const badgeVariants: Record<string, string> = {
+const priorityVariants: Record<string, string> = {
+    low: 'bg-gray-100 text-gray-700',
+    medium: 'bg-yellow-100 text-yellow-800',
+    high: 'bg-orange-100 text-orange-800',
+};
+
+const severityVariants: Record<string, string> = {
     low: 'bg-gray-100 text-gray-700',
     medium: 'bg-yellow-100 text-yellow-800',
     high: 'bg-orange-100 text-orange-800',
     critical: 'bg-red-100 text-red-700',
+};
+
+const isCompletedVariants: Record<string, string> = {
+    true: 'bg-green-100 text-green-800',
+    false: 'bg-gray-100 text-gray-700',
 };
 
 export default function TaskRow({ task }: { task: Task }) {
@@ -46,7 +58,7 @@ export default function TaskRow({ task }: { task: Task }) {
             <td className="px-4 py-3 text-center">
                 <span
                     className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${
-                        badgeVariants[task.priority] ??
+                        priorityVariants[task.priority] ??
                         'bg-gray-100 text-gray-700'
                     }`}
                 >
@@ -57,7 +69,7 @@ export default function TaskRow({ task }: { task: Task }) {
             <td className="px-4 py-3 text-center">
                 <span
                     className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${
-                        badgeVariants[task.severity] ??
+                        severityVariants[task.severity] ??
                         'bg-gray-100 text-gray-700'
                     }`}
                 >
@@ -65,9 +77,29 @@ export default function TaskRow({ task }: { task: Task }) {
                 </span>
             </td>
 
-            <td className="px-4 py-3 text-gray-600">{task.due_at}</td>
+            <td className="px-4 py-3 text-center text-gray-600">
+                {task.due_at
+                    ? new Date(task.due_at).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: '2-digit',
+                          year: 'numeric',
+                      })
+                    : '—'}
+            </td>
 
-            <td className="space-x-2 px-4 py-3 text-right">
+            <td className="px-4 py-3 text-center">
+                <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${
+                        isCompletedVariants[
+                            task.is_completed ? 'true' : 'false'
+                        ] ?? 'bg-gray-100 text-gray-700'
+                    }`}
+                >
+                    {task.is_completed ? 'Completed' : 'Pending'}
+                </span>
+            </td>
+
+            <td className="space-x-2 px-4 py-3 text-center">
                 <Button size="sm" variant="outline" asChild>
                     <TextLink
                         href={tasks.edit(task.id).url}

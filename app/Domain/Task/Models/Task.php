@@ -4,60 +4,98 @@ declare(strict_types=1);
 
 namespace App\Domain\Task\Models;
 
-use App\Domain\Task\DTOs\CreateTaskData;
 use App\Domain\Task\Entities\TaskPriority;
 use App\Domain\Task\Entities\TaskSeverity;
 use Carbon\CarbonImmutable;
 
 class Task
 {
-    public ?int $id;
+    private ?int $id;
 
-    public string $title;
+    private string $title;
 
-    public ?string $description;
+    private ?string $description;
 
-    public bool $is_completed;
+    private bool $isCompleted;
 
-    public ?CarbonImmutable $completed_at;
+    private ?CarbonImmutable $completedAt;
 
-    public TaskPriority $priority;
+    private TaskPriority $priority;
 
-    public TaskSeverity $severity;
+    private TaskSeverity $severity;
 
-    public ?CarbonImmutable $due_at;
+    private ?CarbonImmutable $dueAt;
 
-    public function __construct(
+    private function __construct(
         ?int $id,
         string $title,
         ?string $description,
-        bool $is_completed,
-        ?CarbonImmutable $completed_at,
+        bool $isCompleted,
+        ?CarbonImmutable $completedAt,
         TaskPriority $priority,
         TaskSeverity $severity,
-        ?CarbonImmutable $due_at
+        ?CarbonImmutable $dueAt
     ) {
+        if (trim($title) === '') {
+            throw new \InvalidArgumentException('Title cannot be empty');
+        }
+
+        if ($isCompleted && $completedAt === null) {
+            throw new \InvalidArgumentException('Completed at cannot be null');
+        }
+
+        if ($dueAt !== null && $dueAt->isBefore(CarbonImmutable::today())) {
+            throw new \InvalidArgumentException('Due date cannot be in the past');
+        }
+
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
-        $this->is_completed = $is_completed;
-        $this->completed_at = $completed_at;
+        $this->isCompleted = $isCompleted;
+        $this->completedAt = $completedAt;
         $this->priority = $priority;
         $this->severity = $severity;
-        $this->due_at = $due_at;
+        $this->dueAt = $dueAt;
     }
 
-    public static function create(CreateTaskData $data): self
-    {
+    public static function reconstitute(
+        int $id,
+        string $title,
+        ?string $description,
+        bool $isCompleted,
+        ?CarbonImmutable $completedAt,
+        TaskPriority $priority,
+        TaskSeverity $severity,
+        ?CarbonImmutable $dueAt
+    ): self {
+        return new self(
+            $id,
+            $title,
+            $description,
+            $isCompleted,
+            $completedAt,
+            $priority,
+            $severity,
+            $dueAt
+        );
+    }
+
+    public static function create(
+        string $title,
+        ?string $description,
+        TaskPriority $priority,
+        TaskSeverity $severity,
+        ?CarbonImmutable $dueAt
+    ): self {
         return new self(
             null,
-            $data->title,
-            $data->description,
+            $title,
+            $description,
             false,
             null,
-            $data->priority,
-            $data->severity,
-            $data->due_at
+            $priority,
+            $severity,
+            $dueAt
         );
     }
 
@@ -85,23 +123,41 @@ class Task
         $this->severity = $severity;
     }
 
-    public function reschedule(CarbonImmutable $due_at): void
+    public function reschedule(CarbonImmutable $dueAt): void
     {
-        if ($due_at->isBefore(CarbonImmutable::today())) {
+        if ($dueAt->isBefore(CarbonImmutable::today())) {
             throw new \InvalidArgumentException('Due date cannot be in the past');
         }
 
-        $this->due_at = $due_at;
+        $this->dueAt = $dueAt;
     }
 
-    public function toggleCompletion(): void
+    public function clearDueDate(): void
     {
-        $this->is_completed = ! $this->is_completed;
-
-        $this->completed_at = $this->is_completed ? CarbonImmutable::now() : null;
+        $this->dueAt = null;
     }
 
-    public function id(): int
+    public function complete(): void
+    {
+        if ($this->isCompleted) {
+            throw new \InvalidArgumentException('Task is already completed');
+        }
+
+        $this->isCompleted = true;
+        $this->completedAt = CarbonImmutable::now();
+    }
+
+    public function reopen(): void
+    {
+        if (! $this->isCompleted) {
+            throw new \InvalidArgumentException('Task is not completed');
+        }
+
+        $this->isCompleted = false;
+        $this->completedAt = null;
+    }
+
+    public function id(): ?int
     {
         return $this->id;
     }
@@ -118,12 +174,12 @@ class Task
 
     public function isCompleted(): bool
     {
-        return $this->is_completed;
+        return $this->isCompleted;
     }
 
     public function completedAt(): ?CarbonImmutable
     {
-        return $this->completed_at;
+        return $this->completedAt;
     }
 
     public function priority(): TaskPriority
@@ -138,6 +194,6 @@ class Task
 
     public function dueAt(): ?CarbonImmutable
     {
-        return $this->due_at;
+        return $this->dueAt;
     }
 }

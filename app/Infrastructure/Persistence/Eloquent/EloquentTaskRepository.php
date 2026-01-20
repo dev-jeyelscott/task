@@ -6,17 +6,17 @@ namespace App\Infrastructure\Persistence\Eloquent;
 
 use App\Domain\Task\Entities\TaskPriority;
 use App\Domain\Task\Entities\TaskSeverity;
-use App\Domain\Task\Models\Task;
+use App\Domain\Task\Models\Task as TaskModel;
 use App\Domain\Task\Repositories\TaskRepository;
 use App\Models\Task as EloquentTask;
 
 final class EloquentTaskRepository implements TaskRepository
 {
-    public function find(int $id): Task
+    public function find(int $id): TaskModel
     {
         $task = EloquentTask::findOrFail($id);
 
-        return new Task(
+        return TaskModel::reconstitute(
             $task->id,
             $task->title,
             $task->description,
@@ -28,30 +28,36 @@ final class EloquentTaskRepository implements TaskRepository
         );
     }
 
-    public function store(Task $task): void
+    public function store(TaskModel $taskModel): int
     {
-        EloquentTask::create([
-            'title' => $task->title(),
-            'description' => $task->description(),
-            'is_completed' => $task->isCompleted(),
-            'completed_at' => $task->completedAt(),
-            'due_at' => $task->dueAt(),
-            'priority' => $task->priority->value(),
-            'severity' => $task->severity->value(),
+        $eloquentTask = EloquentTask::create([
+            'title' => $taskModel->title(),
+            'description' => $taskModel->description(),
+            'is_completed' => $taskModel->isCompleted(),
+            'completed_at' => $taskModel->completedAt(),
+            'due_at' => $taskModel->dueAt(),
+            'priority' => $taskModel->priority()->value(),
+            'severity' => $taskModel->severity()->value(),
         ]);
+
+        return $eloquentTask->id;
     }
 
-    public function update(Task $task): void
+    public function save(TaskModel $taskModel): void
     {
-        $eloquentTask = EloquentTask::findOrFail($task->id());
+        $eloquentTask = EloquentTask::findOrFail($taskModel->id());
 
-        $eloquentTask->title = $task->title();
-        $eloquentTask->description = $task->description();
-        $eloquentTask->due_at = $task->dueAt();
-        $eloquentTask->priority = $task->priority()->value();
-        $eloquentTask->severity = $task->severity()->value();
+        $eloquentTask->fill([
+            'title' => $taskModel->title(),
+            'description' => $taskModel->description(),
+            'due_at' => $taskModel->dueAt(),
+            'priority' => $taskModel->priority()->value(),
+            'severity' => $taskModel->severity()->value(),
+            'is_completed' => $taskModel->isCompleted(),
+            'completed_at' => $taskModel->completedAt(),
+        ]);
 
-        $eloquentTask->update();
+        $eloquentTask->save();
     }
 
     public function deleteById(int $id): void
@@ -59,15 +65,5 @@ final class EloquentTaskRepository implements TaskRepository
         $eloquentTask = EloquentTask::findOrFail($id);
 
         $eloquentTask->delete();
-    }
-
-    public function toggleCompletion(Task $task): void
-    {
-        $eloquentTask = EloquentTask::findOrFail($task->id());
-
-        $eloquentTask->update([
-            'is_completed' => $task->isCompleted(),
-            'completed_at' => $task->completedAt(),
-        ]);
     }
 }

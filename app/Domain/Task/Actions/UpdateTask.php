@@ -17,18 +17,23 @@ final class UpdateTask
         int $id,
         string $title,
         ?string $description,
-        TaskPriority $priority,
-        TaskSeverity $severity,
-        CarbonImmutable $due_at
+        string $priority,
+        string $severity,
+        ?string $dueAt
     ): void {
         $task = $this->task_repository->find($id);
 
         $task->rename($title);
         $task->changeDescription($description);
-        $task->changePriority($priority);
-        $task->changeSeverity($severity);
-        $task->reschedule($due_at);
+        $task->changePriority(new TaskPriority($priority));
+        $task->changeSeverity(new TaskSeverity($severity));
 
-        $this->task_repository->update($task);
+        if ($dueAt !== null) {
+            $task->reschedule(new CarbonImmutable($dueAt));
+        } else {
+            $task->clearDueDate();
+        }
+
+        $this->task_repository->save($task);
     }
 }
