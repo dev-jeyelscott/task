@@ -6,6 +6,7 @@ namespace App\Domain\Task\DTOs;
 
 use App\Domain\Task\Entities\TaskPriority;
 use App\Domain\Task\Entities\TaskSeverity;
+use Carbon\CarbonImmutable;
 
 final class CreateTaskData
 {
@@ -14,6 +15,6 @@ final class CreateTaskData
         public ?string $description,
         public TaskPriority $priority,
         public TaskSeverity $severity,
-        public ?string $due_at
+        public ?CarbonImmutable $due_at
     ) {}
 }

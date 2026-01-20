@@ -12,23 +12,23 @@ use Illuminate\Support\Str;
 class TaskResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
+     * Return an array containing the task's details.
      */
     public function toArray(Request $request): array
     {
+        $task = $this->resource;
+
         return [
-            'id' => $this->id,
-            'title' => Str::limit($this->title, 30, '...'),
-            'description' => $this->description ? Str::limit($this->description, 50, '...') : null,
-            'priority' => Priority::from($this->priority),
-            'severity' => Severity::from($this->severity),
-            'is_completed' => $this->is_completed ? true : false,
-            'completed_at' => $this->completed_at ? Carbon::parse($this->completed_at)->format('M d Y') : null,
-            'due_at' => $this->due_at ? Carbon::parse($this->due_at)->format('M d Y') : null,
-            'created_at' => $this->created_at->diffForHumans(),
-            'updated_at' => $this->updated_at->diffForHumans(),
+            'id' => $task->id,
+            'title' => Str::limit($task->title, 30, '...'),
+            'description' => $task->description ? Str::limit($task->description, 50, '...') : null,
+            'priority' => Priority::from($task->priority),
+            'severity' => Severity::from($task->severity),
+            'is_completed' => $task->is_completed ? true : false,
+            'completed_at' => $task->completed_at ? Carbon::parse($task->completed_at)->format('M d Y') : null,
+            'due_at' => $task->due_at ? Carbon::parse($task->due_at)->format('M d Y') : null,
+            'created_at' => $task->created_at->diffForHumans(),
+            'updated_at' => $task->updated_at->diffForHumans(),
         ];
     }
 }

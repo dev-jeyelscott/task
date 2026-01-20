@@ -7,7 +7,9 @@ namespace App\Domain\Task\Entities;
 final class TaskPriority
 {
     private const string LOW = 'low';
+
     private const string MEDIUM = 'medium';
+
     private const string HIGH = 'high';
 
     private string $value;

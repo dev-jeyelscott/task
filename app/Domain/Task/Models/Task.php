@@ -7,27 +7,35 @@ namespace App\Domain\Task\Models;
 use App\Domain\Task\DTOs\CreateTaskData;
 use App\Domain\Task\Entities\TaskPriority;
 use App\Domain\Task\Entities\TaskSeverity;
+use Carbon\CarbonImmutable;
 
 class Task
 {
     public ?int $id;
+
     public string $title;
+
     public ?string $description;
+
     public bool $is_completed;
-    public ?string $completed_at;
+
+    public ?CarbonImmutable $completed_at;
+
     public TaskPriority $priority;
+
     public TaskSeverity $severity;
-    public ?string $due_at;
+
+    public ?CarbonImmutable $due_at;
 
     public function __construct(
         ?int $id,
         string $title,
         ?string $description,
         bool $is_completed,
-        ?string $completed_at,
+        ?CarbonImmutable $completed_at,
         TaskPriority $priority,
         TaskSeverity $severity,
-        ?string $due_at
+        ?CarbonImmutable $due_at
     ) {
         $this->id = $id;
         $this->title = $title;

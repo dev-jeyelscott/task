@@ -24,17 +24,19 @@ export default function AppSidebarLayout({
 
     const toastClass = toastStyles[flash.toast?.type ?? 'default'];
 
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(() => Boolean(flash.toast));
 
     useEffect(() => {
-        if (flash.toast) {
-            setVisible(true);
+        if (!flash.toast) return;
 
-            const timer = setTimeout(() => {
-                setVisible(false);
-            }, 3000);
-            return () => clearTimeout(timer);
-        }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setVisible(true);
+
+        const timer = setTimeout(() => {
+            setVisible(false);
+        }, 3000);
+
+        return () => clearTimeout(timer);
     }, [flash.toast]);
 
     return (

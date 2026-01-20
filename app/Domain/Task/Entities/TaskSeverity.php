@@ -5,8 +5,11 @@ namespace App\Domain\Task\Entities;
 final class TaskSeverity
 {
     private const LOW = 'low';
+
     private const MEDIUM = 'medium';
+
     private const HIGH = 'high';
+
     private const CRITICAL = 'critical';
 
     private string $value;

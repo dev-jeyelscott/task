@@ -6,13 +6,13 @@ namespace App\Infrastructure\Persistence\Eloquent;
 
 use App\Domain\Task\Entities\TaskPriority;
 use App\Domain\Task\Entities\TaskSeverity;
-use App\Models\Task as EloquentTask;
 use App\Domain\Task\Models\Task;
 use App\Domain\Task\Repositories\TaskRepository;
+use App\Models\Task as EloquentTask;
 
 final class EloquestTaskRepository implements TaskRepository
 {
-    public function find(int $id): ?Task
+    public function find(int $id)
     {
         $task = EloquentTask::findOrFail($id);
 

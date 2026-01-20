@@ -6,12 +6,12 @@ use App\Domain\Task\Actions\StoreTask;
 use App\Domain\Task\DTOs\CreateTaskData;
 use App\Domain\Task\Entities\TaskPriority;
 use App\Domain\Task\Entities\TaskSeverity;
-use App\Domain\Task\Models\Task as TaskDomain;
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
 use App\Http\Resources\Tasks\TaskResource;
 use App\Models\Task as TaskModel;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Response;
 use Inertia\Inertia;
 
@@ -36,7 +36,7 @@ class TaskController extends Controller
             $request->description,
             new TaskPriority($request->priority),
             new TaskSeverity($request->severity),
-            $request->due_at,
+            new CarbonImmutable($request->due_at),
         );
 
         $action->execute($data);
