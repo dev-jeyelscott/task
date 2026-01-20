@@ -178,12 +178,15 @@ test('task due date can be cleared', function () {
 });
 
 test('task can be completed', function () {
-    $task = Task::create(
-        'Test Task',
-        'This is a test task',
-        TaskPriority::low(),
-        TaskSeverity::low(),
-        null
+    $task = Task::reconstitute(
+        id: 1,
+        title: 'Test Task',
+        description: 'This is a test task',
+        isCompleted: false,
+        completedAt: null,
+        priority: TaskPriority::low(),
+        severity: TaskSeverity::low(),
+        dueAt: null
     );
 
     $task->complete();
@@ -193,12 +196,15 @@ test('task can be completed', function () {
 });
 
 test('task cannot be completed if already completed', function () {
-    $task = Task::create(
-        'Test Task',
-        'This is a test task',
-        TaskPriority::low(),
-        TaskSeverity::low(),
-        null
+    $task = Task::reconstitute(
+        id: 1,
+        title: 'Test Task',
+        description: 'This is a test task',
+        isCompleted: false,
+        completedAt: null,
+        priority: TaskPriority::low(),
+        severity: TaskSeverity::low(),
+        dueAt: null
     );
 
     $task->complete();
@@ -219,12 +225,15 @@ test('task cannot be reopened if not completed', function () {
 })->throws(\InvalidArgumentException::class, 'Task is not completed');
 
 test('task can be reopened', function () {
-    $task = Task::create(
-        'Test Task',
-        'This is a test task',
-        TaskPriority::low(),
-        TaskSeverity::low(),
-        null
+    $task = Task::reconstitute(
+        id: 1,
+        title: 'Test Task',
+        description: 'This is a test task',
+        isCompleted: false,
+        completedAt: null,
+        priority: TaskPriority::low(),
+        severity: TaskSeverity::low(),
+        dueAt: null
     );
 
     $task->complete();

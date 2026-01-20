@@ -25,8 +25,8 @@ class TaskResource extends JsonResource
             'priority' => Priority::from($task->priority),
             'severity' => Severity::from($task->severity),
             'is_completed' => $task->is_completed ? true : false,
-            'completed_at' => $task->completed_at ? Carbon::parse($task->completed_at) : null,
-            'due_at' => $task->due_at ? Carbon::parse($task->due_at) : null,
+            'completed_at' => $task->completed_at ? Carbon::parse($task->completed_at)->format('Y-m-d') : null,
+            'due_at' => $task->due_at ? Carbon::parse($task->due_at)->format('Y-m-d') : null,
             'created_at' => $task->created_at->diffForHumans(),
             'updated_at' => $task->updated_at->diffForHumans(),
         ];
