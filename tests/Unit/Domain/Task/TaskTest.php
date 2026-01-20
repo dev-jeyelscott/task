@@ -1,9 +1,9 @@
 <?php
 
-use Carbon\CarbonImmutable;
-use App\Domain\Task\Models\Task;
 use App\Domain\Task\Entities\TaskPriority;
 use App\Domain\Task\Entities\TaskSeverity;
+use App\Domain\Task\Models\Task;
+use Carbon\CarbonImmutable;
 
 test('task can be reconstituted from persistence', function () {
     $task = Task::reconstitute(
