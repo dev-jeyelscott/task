@@ -50,3 +50,6 @@ jobs:
 
       - name: Tests
         run: ./vendor/bin/pest
+
+      - name: PHPStan
+        run: ./vendor/bin/phpstan analyze
