@@ -13,7 +13,6 @@ use App\Http\Requests\Tasks\StoreTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
 use App\Http\Resources\Tasks\TaskResource;
 use App\Models\Task as TaskModel;
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Response;
 use Inertia\Inertia;
@@ -23,7 +22,7 @@ class TaskController extends Controller
     public function index()
     {
         return Inertia::render('tasks/index', [
-            'taskItems' => Inertia::scroll(fn() => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
+            'taskItems' => Inertia::scroll(fn () => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
         ]);
     }
 

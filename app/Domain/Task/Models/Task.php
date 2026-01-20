@@ -96,7 +96,7 @@ class Task
 
     public function toggleCompletion(): void
     {
-        $this->is_completed = !$this->is_completed;
+        $this->is_completed = ! $this->is_completed;
 
         $this->completed_at = $this->is_completed ? CarbonImmutable::now() : null;
     }
