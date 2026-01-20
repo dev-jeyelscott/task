@@ -22,7 +22,7 @@ class TaskController extends Controller
     public function index()
     {
         return Inertia::render('tasks/index', [
-            'taskItems' => Inertia::scroll(fn() => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
+            'taskItems' => Inertia::scroll(fn () => TaskModel::latest()->paginate(25)->toResourceCollection(TaskResource::class)),
         ]);
     }
 
